@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>刘潇雨 - 软件官网</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="background"></div>
+    <div class="content">
+        <h1 class="title">刘潇雨</h1>
+        <div class="nav-container">
+            <div class="circle-ring"></div>
+            <div class="nav-buttons">
+                <a href="/page1" class="nav-button">1</a>
+                <a href="/page2" class="nav-button">2</a>
+                <a href="/page3" class="nav-button">3</a>
+                <a href="/page4" class="nav-button">4</a>
+                <a href="/page5" class="nav-button">5</a>
+                <a href="/page6" class="nav-button">6</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.nav-button');
+            const radius = 250; // 轨道半径
+            const center = { x: 300, y: 300 }; // 中心点坐标
+            
+            // 计算6个按钮的初始位置（60度间隔）
+            const positions = [];
+            for (let i = 0; i < 6; i++) {
+                const angle = (i * 60) * (Math.PI / 180);
+                positions.push({
+                    x: center.x + radius * Math.cos(angle),
+                    y: center.y + radius * Math.sin(angle)
+                });
+            }
+            
+            // 设置按钮初始位置并动画展开
+            buttons.forEach((button, index) => {
+                // 设置最终位置
+                button.style.left = positions[index].x + 'px';
+                button.style.top = positions[index].y + 'px';
+                
+                // 从中心点开始动画
+                gsap.fromTo(button, 
+                    {
+                        x: 0,
+                        y: 0,
+                        opacity: 0,
+                        scale: 0.3
+                    },
+                    {
+                        x: positions[index].x - center.x,
+                        y: positions[index].y - center.y,
+                        opacity: 1,
+                        scale: 1,
+                        duration: 1.5,
+                        delay: index * 0.15,
+                        ease: "back.out(1.7)"
+                    }
+                );
+            });
+            
+            // 旋转动画（只旋转位置，不旋转按钮本身）
+            let angle = 0;
+            function rotateButtons() {
+                angle += 0.2;
+                if (angle >= 360) angle = 0;
+                
+                buttons.forEach((button, index) => {
+                    const currentAngle = (index * 60 + angle) * (Math.PI / 180);
+                    const x = center.x + radius * Math.cos(currentAngle);
+                    const y = center.y + radius * Math.sin(currentAngle);
+                    
+                    gsap.to(button, {
+                        x: x - center.x,
+                        y: y - center.y,
+                        duration: 1.5,
+                        ease: "sine.inOut"
+                    });
+                });
+                
+                requestAnimationFrame(rotateButtons);
+            }
+            
+            // 延迟开始旋转
+            setTimeout(rotateButtons, 2000);
+        });
+    </script>
+</body>
+</html>
